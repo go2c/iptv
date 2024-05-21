@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>360广告规则</title>
+    <style>
+        .center {
+            text-align: center;
+        }
+        .left {
+            float: left;
+        }
+        .border {
+            border: 1px solid gray;
+        }
+    </style>
+</head>
+<body>
+    <div class="center">
+        <h1>360广告规则</h1>
+        <p>换一行再换一行</p>
+    </div>
+    <div class="left">
+        <input type="text" id="url" class="border" readonly>
+        <button id="getRules" onclick="getLatestVersion()">获取规则</button>
+        <button id="download" onclick="downloadFile()" style="display:none;">下载</button>
+    </div>
+    <script>
+        var latestVersion = 100176; // 初始版本号
+
+        function getLatestVersion() {
+            latestVersion += 1; // 每次点击按钮时，版本号加1
+            var url = "http://msedl.360safe.com/360mse/bcdbgimoikiapdjnifgghhgcfoclpchk/" + latestVersion + "/bcdbgimoikiapdjnifgghhgcfoclpchk.txt";
+            // 检测新版本号是否有效，如果无效则返回上一个有效的版本号
+            fetch(url)
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("url").value = url;
+                        document.getElementById("getRules").style.display = "none";
+                        document.getElementById("download").style.display = "inline";
+                    } else {
+                        latestVersion -= 1; // 如果无效，则返回上一个有效的版本号
+                        getLatestVersion(); // 递归调用，直到找到有效的版本号
+                    }
+                })
+                .catch(error => {
+                    latestVersion -= 1; // 如果发生错误，则返回上一个有效的版本号
+                    getLatestVersion(); // 递归调用，直到找到有效的版本号
+                });
+        }
+
+        function downloadFile() {
+            var url = document.getElementById("url").value;
+            var link = document.createElement('a');
+            link.href = url;
+            link.download = 'rules.txt';
+            link.click();
+        }
+    </script>
+</body>
+</html>
